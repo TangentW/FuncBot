@@ -2,14 +2,20 @@ import XCTest
 @testable import FuncBot
 
 class FuncBotTests: XCTestCase {
+    var inc = 0
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(FuncBot().text, "Hello, World!")
+        
+//        let huo = huoxing(appId: "")
+//        let bai = baike(appId: "")
+//        let middleware = huo
+//        
+//        let main = RTM.loopToRead
+//            >>- Message.filter(to: Message.Normal.self)
+//            >>- Message.replyBindText(refer: false, middleware)
+//            >>- RTM.sendMsg
+//        FuncBot.run(main, with: "ae281bd8fce05519b25837b61b95260d")
     }
-
-
+    
     static var allTests = [
         ("testExample", testExample),
     ]
