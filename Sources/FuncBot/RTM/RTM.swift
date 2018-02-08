@@ -8,8 +8,10 @@
 import Foundation
 import Starscream
 
+private let heartbeatInterval: TimeInterval = 6
 public final class RTM {
     private var _socket: WebSocket?
+    private var _timer: Timer?
 
     private var _eventCallbacks = [(Event) -> ()]()
     
@@ -47,13 +49,30 @@ extension RTM {
 }
 
 private extension RTM {
+    func _starHeartbeat() {
+        let timer = Timer(timeInterval: heartbeatInterval, target: self, selector: #selector(RTM._peng), userInfo: nil, repeats: true)
+        RunLoop.current.add(timer, forMode: .commonModes)
+        _timer = timer
+    }
+
+    func _stopHeartbeat() {
+        _timer?.invalidate()
+        _timer = nil
+    }
+    
+    @objc func _peng() {
+        _socket?.write(ping: Data())
+    }
+    
     func _bind() {
         _socket?.onConnect = { [weak self] in
             self?._eventCallbacks.forEach { $0(.connected) }
+            self?._starHeartbeat()
         }
 
         _socket?.onDisconnect = { [weak self] error in
             self?._eventCallbacks.forEach { $0(.disconnected(error)) }
+            self?._stopHeartbeat()
         }
 
         _socket?.onText = { [weak self] text in

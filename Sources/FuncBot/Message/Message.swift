@@ -167,5 +167,18 @@ public extension Message {
             return IO.return(value)
         }
     }
+    
+    static func act(actions: [String: (String) -> IO<String>], empty: String) -> (String) -> IO<String> {
+        return { text in
+            let command = text.prefix { $0 != " " }
+            let content = text.drop { $0 != " " }
+            guard let action = actions[String(command)] else { return .return(empty) }
+            return action(String(content).trimmingCharacters(in: .whitespaces))
+        }
+    }
+    
+    static func reply(with actions: [String: (String) -> IO<String>], refer: Bool = false, empty: String) -> (Message.Normal) -> IO<Message.Outgoing> {
+        return replyBindText(refer: refer, act(actions: actions, empty: empty))
+    }
 }
 
